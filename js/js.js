@@ -61,6 +61,10 @@ function errData (err) {
 
 saveButton.addEventListener('click', function(){
   writeNewPost();
+  inputDataFIeld.value = "";
+  inputTextFIeld.value = "";
+  inputMailFIeld.value = "";
+
 });
 
 function writeNewPost(name, email ) {
@@ -82,10 +86,14 @@ function writeNewPost(name, email ) {
   updates['/dane/' + newPostKey] = postData;
 
   return firebase.database().ref().update(updates);
+  
 }
 
+// DatePicker
 $( function() {
-    $( "#datepicker" ).datepicker();
+    $( "#datepicker" ).datepicker({
+        dateFormat: "dd-mm-yy"
+    });
   } );
     
 
