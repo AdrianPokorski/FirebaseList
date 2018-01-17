@@ -13,48 +13,49 @@
 var database = firebase.database(); /* realtime - database */
 const outputHeader= document.querySelector('#header-app');
 const inputTextFIeld = document.querySelector('#choice-app');
+const inputDataFIeld = document.querySelector('#datepicker');
 const inputMailFIeld = document.querySelector('#mail-app');
 const saveButton = document.querySelector('#save-button');
 const loadButton = document.querySelector('#load-button');
 var listingBox = document.querySelector('#lead-listing');
 
+// wyświetlanie oraz odejmowanie rekordów
+
 var ref = database.ref('dane');
 ref.on('value', gotData, errData);
 
 function gotData (data){
-  listingBox.innerHTML = "";
-  var dane = data.val();  //odnosnik do tablicy z dodanymi rekordami
-  var keys = Object.keys(dane);  
+    listingBox.innerHTML = "";
+    var dane = data.val();  //odnosnik do tablicy z dodanymi rekordami
+    var keys = Object.keys(dane);  
   
-  for (var i = 0; i < keys.length; i++){
-      var k = keys[i];
-      var name = dane[k].username;
-      var mail  = dane[k].email;
-      listingBox.innerHTML += `<p>${name} ${mail} <button class="delBtn ${i}">Del</button></p>`
-  }
-  console.log(dane)
-   var deleteButton = document.querySelectorAll('.delBtn');
-   
-   [].forEach.call(deleteButton, function(value){
+    for (var i = 0; i < keys.length; i++){
+        var k = keys[i];
+        var dateCal = dane[k].date;
+        var name = dane[k].username;
+        var mail  = dane[k].email;
+        listingBox.innerHTML += `<p>${dateCal}  ${name} ${mail} <button class="delBtn ${i}">Del</button></p>`
+    } 
+  
+    var deleteButton = document.querySelectorAll('.delBtn');
+
+    [].forEach.call(deleteButton, function(value){
         value.addEventListener('click', function(e){
               var thisObj = e.target.classList[1];
               var firebaseRef = firebase.database().ref('dane/' +  keys[thisObj] );
-                firebaseRef.remove().then(function(){
-                    console.log("remove succeeded");
-                }).catch(function(error){
-                    console.log("remove failed: " + error);
-                })
+              firebaseRef.remove().then(function(){
+                  console.log("remove succeeded");
+              }).catch(function(error){
+                  console.log("remove failed: " + error);
+              })
         })
-   })
+    })
 }
 
 function errData (err) {
     console.log('Error!');
     console.log(err);
 }
-
-
-
 
 // Dodawanie do bazy danych kolejnych rekordów + update 
 
@@ -64,9 +65,11 @@ saveButton.addEventListener('click', function(){
 
 function writeNewPost(name, email ) {
   // A post entry.
+    const dateToSave = inputDataFIeld.value;
     const textToSave = inputTextFIeld.value;
     const mailToSave = inputMailFIeld.value;
     var postData = {
+    date: dateToSave,
     username: textToSave,
     email: mailToSave,
     };
@@ -81,7 +84,9 @@ function writeNewPost(name, email ) {
   return firebase.database().ref().update(updates);
 }
 
-
+$( function() {
+    $( "#datepicker" ).datepicker();
+  } );
     
 
 
